@@ -15,13 +15,12 @@ class BusRoute {
 }
 
 //Functions
-getKMBBusRoutesList() async {
+Future<List<BusRoute>> getKMBBusRoutesList() async {
   List<BusRoute> busRoutesList = [];
   // KMB
   var url = Uri.https('data.etabus.gov.hk', '/v1/transport/kmb/route/');
   var busRoutes = await getApiData(url);
   for (var busRoute in busRoutes) {
-    print(busRoute['route']);
     var targetBus = BusRoute(
       co: "KMB",
       route: busRoute['route'],
