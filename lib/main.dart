@@ -39,9 +39,11 @@ class _BusScreenState extends State<BusScreen> {
         route: targetBus.route,
         bound: targetBus.bound,
       ).then((targetBusStops) {
-        setState(() {
-          _targetBusStop = generateBusStopItem(targetBusStops);
-        });
+        if (_targetBusStop.isEmpty) {
+          setState(() {
+            _targetBusStop = generateBusStopItem(targetBusStops);
+          });
+        }
       });
     });
 
@@ -73,13 +75,8 @@ class _BusScreenState extends State<BusScreen> {
             );
           },
           body: ListTile(
-              title: Text(item.expandedValue),
-              subtitle:
-                  const Text('To delete this panel, tap the trash can icon'),
-              trailing: const Icon(Icons.delete),
-              onTap: () {
-                setState(() {});
-              }),
+            title: Text(item.expandedValue),
+          ),
           isExpanded: item.isExpanded,
         );
       }).toList(),
@@ -103,8 +100,8 @@ class BusStopItem {
 List<BusStopItem> generateBusStopItem(List<BusStop> targetBusStops) {
   return List<BusStopItem>.generate(targetBusStops.length, (int index) {
     return BusStopItem(
-      headerValue: targetBusStops[index].nameTc,
-      expandedValue: 'This is item number $index',
+      headerValue: "${index + 1}. ${targetBusStops[index].nameTc}",
+      expandedValue: '到站時間: ',
     );
   });
 }
