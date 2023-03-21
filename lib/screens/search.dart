@@ -83,7 +83,7 @@ class BusCard extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.directions_bus_sharp),
             title: Text(busRote.route),
-            subtitle: Text('${busRote.origTc} -> ${busRote.destTc}'),
+            subtitle: Text('${busRote.origTc} > ${busRote.destTc}'),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -94,7 +94,7 @@ class BusCard extends StatelessWidget {
                   Navigator.pushNamed(
                     context,
                     '/BusScreen',
-                    arguments: {'targetBus': busRote},
+                    arguments: busRote,
                   );
                 },
               ),

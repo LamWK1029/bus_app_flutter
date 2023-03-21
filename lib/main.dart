@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/search.dart';
+import '../apiCaller/bus_routes.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -21,9 +22,11 @@ class BusScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final targetBus = ModalRoute.of(context)!.settings.arguments as BusRoute;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Bus Page"),
+        title: Text("${targetBus.route} 住${targetBus.destTc}"),
         backgroundColor: Colors.black,
       ),
     );
