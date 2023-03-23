@@ -28,7 +28,7 @@ class BusScreen extends StatefulWidget {
 }
 
 class _BusScreenState extends State<BusScreen> {
-  String targetBus = "";
+  late BusRoute targetBus;
   List<BusStopItem> _targetBusStop = [];
 
   @override
@@ -44,7 +44,7 @@ class _BusScreenState extends State<BusScreen> {
       ).then((targetBusStops) {
         if (_targetBusStop.isEmpty) {
           setState(() {
-            targetBus = targetBusByPass.route;
+            targetBus = targetBusByPass;
             _targetBusStop = generateBusStopItem(targetBusStops);
           });
         }
@@ -69,7 +69,8 @@ class _BusScreenState extends State<BusScreen> {
       expansionCallback: (int index, bool isExpanded) {
         if (!_targetBusStop[index].isExpanded) {
           getBusArivedTime(
-                  rusRoute: targetBus,
+                  rusRoute: targetBus.route,
+                  busBound: targetBus.bound,
                   busStopID: _targetBusStop[index].busStop.stop)
               .then((arrivedTimeList) {
             String busArrivedTimeList = "到站時間: ";

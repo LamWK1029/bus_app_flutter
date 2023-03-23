@@ -17,7 +17,10 @@ class BusStopArrival {
       this.remainningTime = -1});
 }
 
-getBusArivedTime({required String rusRoute, required String busStopID}) async {
+getBusArivedTime(
+    {required String rusRoute,
+    required String busBound,
+    required String busStopID}) async {
   List<BusStopArrival> arrivalList = [];
 
   var url =
@@ -25,7 +28,7 @@ getBusArivedTime({required String rusRoute, required String busStopID}) async {
 
   var busShiftInfos = await getApiData(url);
   for (var busShift in busShiftInfos) {
-    if (rusRoute == busShift['route']) {
+    if (rusRoute == busShift['route'] && busBound == busShift['dir']) {
       // check remainning arrvial time
       var now = DateTime.now();
       var parsedDate = DateTime.parse(busShift['eta'].toString());
