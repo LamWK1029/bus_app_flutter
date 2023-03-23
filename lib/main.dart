@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/search.dart';
 import 'apiCaller/bus_routes.dart';
 import 'apiCaller/bus_stops.dart';
+import 'apiCaller/bus_stop_arrival.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -27,20 +28,23 @@ class BusScreen extends StatefulWidget {
 }
 
 class _BusScreenState extends State<BusScreen> {
+  String targetBus = "";
   List<BusStopItem> _targetBusStop = [];
 
   @override
   Widget build(BuildContext context) {
-    final targetBus = ModalRoute.of(context)!.settings.arguments as BusRoute;
+    final targetBusByPass =
+        ModalRoute.of(context)!.settings.arguments as BusRoute;
 
     getKMBBusStopsMap().then((allStops) {
       searchStopsByRoutes(
         busStopsMap: allStops,
-        route: targetBus.route,
-        bound: targetBus.bound,
+        route: targetBusByPass.route,
+        bound: targetBusByPass.bound,
       ).then((targetBusStops) {
         if (_targetBusStop.isEmpty) {
           setState(() {
+            targetBus = targetBusByPass.route;
             _targetBusStop = generateBusStopItem(targetBusStops);
           });
         }
@@ -49,7 +53,7 @@ class _BusScreenState extends State<BusScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("${targetBus.route} 住${targetBus.destTc}"),
+        title: Text("${targetBusByPass.route} 住${targetBusByPass.destTc}"),
         backgroundColor: Colors.black,
       ),
       body: SingleChildScrollView(
@@ -63,9 +67,30 @@ class _BusScreenState extends State<BusScreen> {
   Widget _buildPanel() {
     return ExpansionPanelList(
       expansionCallback: (int index, bool isExpanded) {
-        setState(() {
-          _targetBusStop[index].isExpanded = !isExpanded;
-        });
+        if (!_targetBusStop[index].isExpanded) {
+          getBusArivedTime(
+                  rusRoute: targetBus,
+                  busStopID: _targetBusStop[index].busStop.stop)
+              .then((arrivedTimeList) {
+            String busArrivedTimeList = "到站時間: ";
+            for (var arrivedTime in arrivedTimeList) {
+              if (arrivedTime.remainningTime > 0) {
+                busArrivedTimeList +=
+                    "\n ${arrivedTime.remainningTime.toString().padLeft(2, '  ')} 分鐘";
+              } else {
+                busArrivedTimeList += "\n 到達";
+              }
+            }
+            setState(() {
+              _targetBusStop[index].isExpanded = !isExpanded;
+              _targetBusStop[index].expandedValue = busArrivedTimeList;
+            });
+          });
+        } else {
+          setState(() {
+            _targetBusStop[index].isExpanded = !isExpanded;
+          });
+        }
       },
       children: _targetBusStop.map<ExpansionPanel>((BusStopItem item) {
         return ExpansionPanel(
@@ -87,11 +112,13 @@ class _BusScreenState extends State<BusScreen> {
 // bus stop
 class BusStopItem {
   BusStopItem({
+    required this.busStop,
     required this.expandedValue,
     required this.headerValue,
     this.isExpanded = false,
   });
 
+  BusStop busStop;
   String expandedValue;
   String headerValue;
   bool isExpanded;
@@ -100,6 +127,7 @@ class BusStopItem {
 List<BusStopItem> generateBusStopItem(List<BusStop> targetBusStops) {
   return List<BusStopItem>.generate(targetBusStops.length, (int index) {
     return BusStopItem(
+      busStop: targetBusStops[index],
       headerValue: "${index + 1}. ${targetBusStops[index].nameTc}",
       expandedValue: '到站時間: ',
     );
