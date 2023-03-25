@@ -27,22 +27,28 @@ getBusArivedTime(
       Uri.https('data.etabus.gov.hk', '/v1/transport/kmb/stop-eta/$busStopID');
 
   var busShiftInfos = await getApiData(url);
+
+  List<int> busArrivedRemainTime = [];
   for (var busShift in busShiftInfos) {
     if (rusRoute == busShift['route'] && busBound == busShift['dir']) {
       // check remainning arrvial time
       var now = DateTime.now();
       var parsedDate = DateTime.parse(busShift['eta'].toString());
 
-      arrivalList.add(BusStopArrival(
-          route: busShift['route'],
-          dir: busShift['dir'],
-          destTc: busShift['dest_tc'],
-          destSc: busShift['dest_sc'],
-          eta: busShift['eta'],
-          rmkTc: busShift['rmk_tc'],
-          rmkSc: busShift['rmk_sc'],
-          rmkEn: busShift['rmk_en'],
-          remainningTime: parsedDate.difference(now).inMinutes));
+      if (!busArrivedRemainTime
+          .contains(parsedDate.difference(now).inMinutes)) {
+        busArrivedRemainTime.add(parsedDate.difference(now).inMinutes);
+        arrivalList.add(BusStopArrival(
+            route: busShift['route'],
+            dir: busShift['dir'],
+            destTc: busShift['dest_tc'],
+            destSc: busShift['dest_sc'],
+            eta: busShift['eta'],
+            rmkTc: busShift['rmk_tc'],
+            rmkSc: busShift['rmk_sc'],
+            rmkEn: busShift['rmk_en'],
+            remainningTime: parsedDate.difference(now).inMinutes));
+      }
     }
   }
   return arrivalList;

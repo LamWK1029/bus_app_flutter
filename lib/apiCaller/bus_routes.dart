@@ -45,6 +45,7 @@ Future<List<BusRoute>> getNWFBBusRoutesList() async {
   var busRoutes = await getApiData(url);
   for (var busRoad in busRoutes) {
     var targetBus = BusRoute(
+      co: "NWFB",
       route: busRoad['route'],
       origEn: busRoad['orig_en'],
       origTc: busRoad['orig_tc'],
@@ -65,6 +66,7 @@ Future<List<BusRoute>> getCTBBusRoutesList() async {
   var busRoutes = await getApiData(url);
   for (var busRoad in busRoutes) {
     var targetBus = BusRoute(
+      co: "ctb",
       route: busRoad['route'],
       origEn: busRoad['orig_en'],
       origTc: busRoad['orig_tc'],
