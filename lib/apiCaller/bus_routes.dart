@@ -14,25 +14,51 @@ class BusRoute {
       this.destSc = ""});
 }
 
+// create a class for bus stop with only route, orig_en, and dest_en
+class BusStopForRepeatCheck {
+  late String route, origEn, destEn;
+  BusStopForRepeatCheck({this.route = "", this.origEn = "", this.destEn = ""});
+
+  @override
+  bool operator ==(other) {
+    return (other is BusStopForRepeatCheck) &&
+        other.route == route &&
+        other.origEn == origEn &&
+        other.destEn == destEn;
+  }
+}
+
 //Functions
 Future<List<BusRoute>> getKMBBusRoutesList() async {
   List<BusRoute> busRoutesList = [];
   // KMB
   var url = Uri.https('data.etabus.gov.hk', '/v1/transport/kmb/route/');
   var busRoutes = await getApiData(url);
+
+  List<BusStopForRepeatCheck> busRoutesListForRepeatCheck = [];
   for (var busRoute in busRoutes) {
-    var targetBus = BusRoute(
-      co: "KMB",
+    // use busRoute to create a BusStopForRepeatCheck object
+    var busRouteForRepeatCheck = BusStopForRepeatCheck(
       route: busRoute['route'],
       origEn: busRoute['orig_en'],
-      origTc: busRoute['orig_tc'],
-      origSc: busRoute['orig_sc'],
       destEn: busRoute['dest_en'],
-      destTc: busRoute['dest_tc'],
-      destSc: busRoute['dest_sc'],
     );
-    targetBus.bound = busRoute['bound'];
-    busRoutesList.add(targetBus);
+    // add it to busRoutesListForRepeatCheck if it is not in the list
+    if (!busRoutesListForRepeatCheck.contains(busRouteForRepeatCheck)) {
+      busRoutesListForRepeatCheck.add(busRouteForRepeatCheck);
+      var targetBus = BusRoute(
+        co: "KMB",
+        route: busRoute['route'],
+        origEn: busRoute['orig_en'],
+        origTc: busRoute['orig_tc'],
+        origSc: busRoute['orig_sc'],
+        destEn: busRoute['dest_en'],
+        destTc: busRoute['dest_tc'],
+        destSc: busRoute['dest_sc'],
+      );
+      targetBus.bound = busRoute['bound'];
+      busRoutesList.add(targetBus);
+    }
   }
   return busRoutesList;
 }
