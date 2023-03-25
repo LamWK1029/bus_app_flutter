@@ -38,6 +38,7 @@ dependencies:
   path: ^1.8.2
   http: ^0.13.5
   internet_connection_checker: ^1.0.0+1
+  flutter_beep: ^1.0.0
 
 dev_dependencies:
   flutter_test:

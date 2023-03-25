@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../apiCaller/bus_routes.dart';
 import '../apiCaller/bus_stops.dart';
 import '../apiCaller/bus_stop_arrival.dart';
+import 'package:flutter_beep/flutter_beep.dart';
 
 class BusScreen extends StatefulWidget {
   const BusScreen({super.key});
@@ -27,12 +28,13 @@ class _BusScreenState extends State<BusScreen> {
               .then((arrivedTimeList) {
             String busArrivedTimeList = "到站時間: ";
             for (var arrivedTime in arrivedTimeList) {
-              if (arrivedTime.remainningTime > 0) {
-                busArrivedTimeList +=
-                    "\n ${arrivedTime.remainningTime.toString().padLeft(2, '  ')} 分鐘";
-              } else {
-                busArrivedTimeList += "\n -- 到達";
+              if (arrivedTime.remainningTime == 10) {
+                FlutterBeep.beep();
               }
+              (arrivedTime.remainningTime > 0)
+                  ? busArrivedTimeList +=
+                      "\n ${arrivedTime.remainningTime.toString().padLeft(2, '  ')} 分鐘"
+                  : busArrivedTimeList += "\n -- 到達";
             }
             setState(() {
               busStop.expandedValue = busArrivedTimeList;
