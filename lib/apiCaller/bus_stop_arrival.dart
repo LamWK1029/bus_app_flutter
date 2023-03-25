@@ -25,7 +25,6 @@ getBusArivedTime(
 
   var url =
       Uri.https('data.etabus.gov.hk', '/v1/transport/kmb/stop-eta/$busStopID');
-
   var busShiftInfos = await getApiData(url);
 
   List<int> busArrivedRemainTime = [];
@@ -51,5 +50,8 @@ getBusArivedTime(
       }
     }
   }
+
+  // arrivalList sort by remainning time
+  arrivalList.sort((a, b) => a.remainningTime.compareTo(b.remainningTime));
   return arrivalList;
 }

@@ -9,20 +9,29 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final _controller = TextEditingController();
   List<BusRoute> allBusRoutes = [];
   List<BusCard> displayBusRoutes = [];
+
+  void showRoutes({required bool withKeyword, String keyword = ""}) {
+    List<BusCard> fitRoutes = [];
+    for (var busRoute in allBusRoutes) {
+      if (withKeyword && busRoute.route.contains(keyword)) {
+        fitRoutes.add(BusCard(busRote: busRoute));
+      } else if (!withKeyword) {
+        fitRoutes.add(BusCard(busRote: busRoute));
+      }
+    }
+    setState(() {
+      displayBusRoutes = fitRoutes;
+    });
+  }
 
   @override
   void initState() {
     getKMBBusRoutesList().then((apiData) {
-      setState(() {
-        allBusRoutes = apiData;
-        List<BusCard> fitRoutes = [];
-        for (var busRoute in allBusRoutes) {
-          fitRoutes.add(BusCard(busRote: busRoute));
-        }
-        displayBusRoutes = fitRoutes;
-      });
+      allBusRoutes = apiData;
+      showRoutes(withKeyword: false);
     });
     super.initState();
   }
@@ -40,22 +49,18 @@ class _SearchScreenState extends State<SearchScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: TextField(
+              controller: _controller,
               onChanged: (inputText) {
-                setState(() {
-                  if (allBusRoutes.isNotEmpty) {
-                    List<BusCard> fitRoutes = [];
-                    for (var busRoute in allBusRoutes) {
-                      if (busRoute.route.contains(inputText)) {
-                        fitRoutes.add(BusCard(busRote: busRoute));
-                      }
-                    }
-                    displayBusRoutes = fitRoutes;
-                  }
-                });
+                showRoutes(withKeyword: true, keyword: inputText);
+              },
+              onTap: () {
+                _controller.clear();
+                showRoutes(withKeyword: false);
               },
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter a bus number for searching',
+                suffixIcon: Icon(Icons.clear),
               ),
             ),
           ),
@@ -71,7 +76,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
 class BusCard extends StatelessWidget {
   final BusRoute busRote;
-
   const BusCard({super.key, required this.busRote});
 
   @override
@@ -79,27 +83,21 @@ class BusCard extends StatelessWidget {
     return Card(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+        children: [
           ListTile(
             leading: const Icon(Icons.directions_bus_sharp),
-            title: Text(busRote.route),
+            title: Text(
+              busRote.route,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             subtitle: Text('${busRote.origTc} > ${busRote.destTc}'),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              TextButton(
-                child: const Text('Check Time'),
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/BusScreen',
-                    arguments: busRote,
-                  );
-                },
-              ),
-              const SizedBox(width: 8),
-            ],
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/BusScreen',
+                arguments: busRote,
+              );
+            },
           ),
         ],
       ),

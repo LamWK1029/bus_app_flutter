@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/search.dart';
-import 'screens/target_bus.dart';
+import 'screens/bus_routes.dart';
+import 'screens/bus_arrived.dart';
 
 void main() {
   runApp(MaterialApp(

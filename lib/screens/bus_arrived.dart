@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import '../apiCaller/bus_routes.dart';
 import '../apiCaller/bus_stops.dart';
@@ -70,10 +69,21 @@ class _BusScreenState extends State<BusScreen> {
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
               title: Text(item.headerValue),
+              onTap: () {
+                setState(() {
+                  item.isExpanded = !isExpanded;
+                });
+                checkExpandedStopsArrivedTime(soundEnable: false);
+              },
             );
           },
           body: ListTile(
             title: Text(item.expandedValue),
+            onTap: () {
+              setState(() {
+                item.isExpanded = !item.isExpanded;
+              });
+            },
           ),
           isExpanded: item.isExpanded,
         );
