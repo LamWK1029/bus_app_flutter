@@ -45,6 +45,16 @@ class _BusScreenState extends State<BusScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () {
+            setState(() {
+              _targetBusStop = [];
+              timer?.cancel();
+            });
+            Navigator.pop(context);
+          },
+        ),
         title: Text("${targetBusByPass.route} 住${targetBusByPass.destTc}"),
         backgroundColor: Colors.black,
       ),
