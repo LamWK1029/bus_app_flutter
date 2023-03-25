@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../apiCaller/bus_routes.dart';
 import '../apiCaller/bus_stops.dart';
@@ -12,38 +14,19 @@ class BusScreen extends StatefulWidget {
 }
 
 class _BusScreenState extends State<BusScreen> {
+  Timer? timer;
   late BusRoute targetBus;
   List<BusStopItem> _targetBusStop = [];
 
   @override
-  Widget build(BuildContext context) {
-    // update in every 1 min
-    Future.delayed(const Duration(minutes: 1), () {
-      for (var busStop in _targetBusStop) {
-        if (busStop.isExpanded) {
-          getBusArivedTime(
-                  rusRoute: targetBus.route,
-                  busBound: targetBus.bound,
-                  busStopID: busStop.busStop.stop)
-              .then((arrivedTimeList) {
-            String busArrivedTimeList = "到站時間: ";
-            for (var arrivedTime in arrivedTimeList) {
-              if (arrivedTime.remainningTime == 10) {
-                FlutterBeep.beep();
-              }
-              (arrivedTime.remainningTime > 0)
-                  ? busArrivedTimeList +=
-                      "\n ${arrivedTime.remainningTime.toString().padLeft(2, '  ')} 分鐘"
-                  : busArrivedTimeList += "\n -- 到達";
-            }
-            setState(() {
-              busStop.expandedValue = busArrivedTimeList;
-            });
-          });
-        }
-      }
-    });
+  void initState() {
+    timer = Timer.periodic(const Duration(minutes: 1),
+        (Timer t) => checkExpandedStopsArrivedTime(soundEnable: true));
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     final targetBusByPass =
         ModalRoute.of(context)!.settings.arguments as BusRoute;
     getKMBBusStopsMap().then((allStops) {
@@ -80,26 +63,7 @@ class _BusScreenState extends State<BusScreen> {
         setState(() {
           _targetBusStop[index].isExpanded = !isExpanded;
         });
-        if (_targetBusStop[index].isExpanded) {
-          getBusArivedTime(
-                  rusRoute: targetBus.route,
-                  busBound: targetBus.bound,
-                  busStopID: _targetBusStop[index].busStop.stop)
-              .then((arrivedTimeList) {
-            String busArrivedTimeList = "到站時間: ";
-            for (var arrivedTime in arrivedTimeList) {
-              if (arrivedTime.remainningTime > 0) {
-                busArrivedTimeList +=
-                    "\n ${arrivedTime.remainningTime.toString().padLeft(2, '  ')} 分鐘";
-              } else {
-                busArrivedTimeList += "\n -- 到達";
-              }
-            }
-            setState(() {
-              _targetBusStop[index].expandedValue = busArrivedTimeList;
-            });
-          });
-        }
+        checkExpandedStopsArrivedTime(soundEnable: false);
       },
       children: _targetBusStop.map<ExpansionPanel>((BusStopItem item) {
         return ExpansionPanel(
@@ -115,6 +79,32 @@ class _BusScreenState extends State<BusScreen> {
         );
       }).toList(),
     );
+  }
+
+  void checkExpandedStopsArrivedTime({required bool soundEnable}) {
+    for (var busStop in _targetBusStop) {
+      if (busStop.isExpanded) {
+        getBusArivedTime(
+                rusRoute: targetBus.route,
+                busBound: targetBus.bound,
+                busStopID: busStop.busStop.stop)
+            .then((arrivedTimeList) {
+          String busArrivedTimeList = "到站時間: ";
+          for (var arrivedTime in arrivedTimeList) {
+            if (arrivedTime.remainningTime == 10 && soundEnable) {
+              FlutterBeep.beep();
+            }
+            (arrivedTime.remainningTime > 0)
+                ? busArrivedTimeList +=
+                    "\n ${arrivedTime.remainningTime.toString().padLeft(2, '  ')} 分鐘"
+                : busArrivedTimeList += "\n  -- 到達";
+          }
+          setState(() {
+            busStop.expandedValue = busArrivedTimeList;
+          });
+        });
+      }
+    }
   }
 }
 
