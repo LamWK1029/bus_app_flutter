@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../apiCaller/bus_routes.dart';
 import '../apiCaller/bus_stops.dart';
 import '../apiCaller/bus_stop_arrival.dart';
-import 'package:flutter_beep/flutter_beep.dart';
+// import 'package:flutter_beep/flutter_beep.dart';
 
 class BusScreen extends StatefulWidget {
   const BusScreen({super.key});
@@ -19,7 +19,7 @@ class _BusScreenState extends State<BusScreen> {
 
   @override
   void initState() {
-    timer = Timer.periodic(const Duration(minutes: 1),
+    timer = Timer.periodic(const Duration(seconds: 30),
         (Timer t) => checkExpandedStopsArrivedTime(soundEnable: true));
     super.initState();
   }
@@ -111,9 +111,9 @@ class _BusScreenState extends State<BusScreen> {
             .then((arrivedTimeList) {
           String busArrivedTimeList = "到站時間: ";
           for (var arrivedTime in arrivedTimeList) {
-            if (arrivedTime.remainningTime == 10 && soundEnable) {
-              FlutterBeep.beep();
-            }
+            // if (arrivedTime.remainningTime == 10 && soundEnable) {
+            //   FlutterBeep.beep();
+            // }
             (arrivedTime.remainningTime > 0)
                 ? busArrivedTimeList +=
                     "\n ${arrivedTime.remainningTime.toString().padLeft(2, '  ')} 分鐘"

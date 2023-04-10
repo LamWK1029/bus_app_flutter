@@ -36,6 +36,13 @@ class _SearchScreenState extends State<SearchScreen> {
     super.initState();
   }
 
+  Future<void> _refresh() {
+    return getKMBBusRoutesList().then((apiData) {
+      allBusRoutes = apiData;
+      showRoutes(withKeyword: false);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,8 +72,11 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
           Expanded(
-            child: ListView(
-                padding: const EdgeInsets.all(8), children: displayBusRoutes),
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              child: ListView(
+                  padding: const EdgeInsets.all(8), children: displayBusRoutes),
+            ),
           ),
         ],
       ),
