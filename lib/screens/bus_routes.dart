@@ -12,6 +12,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
   List<BusRoute> allBusRoutes = [];
   List<BusCard> displayBusRoutes = [];
+  String inputTextForSearch = "";
 
   void showRoutes({required bool withKeyword, String keyword = ""}) {
     List<BusCard> fitRoutes = [];
@@ -39,7 +40,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> _refresh() {
     return getKMBBusRoutesList().then((apiData) {
       allBusRoutes = apiData;
-      showRoutes(withKeyword: false);
+      showRoutes(withKeyword: true, keyword: inputTextForSearch);
     });
   }
 
@@ -58,7 +59,8 @@ class _SearchScreenState extends State<SearchScreen> {
             child: TextField(
               controller: _controller,
               onChanged: (inputText) {
-                showRoutes(withKeyword: true, keyword: inputText);
+                inputTextForSearch = inputText;
+                _refresh();
               },
               onTap: () {
                 _controller.clear();
