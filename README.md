@@ -1,17 +1,34 @@
-# bus_app
+# Flutter Bus App
 
-A new Flutter project.
+## Overview
+
+This repository contains the code for a Flutter bus app. This mobile application allows users to check bus schedules, track buses in real time, and receive notifications about bus arrivals and departures.
+
+## Features
+
+- Real-time bus tracking: Users can view the live location of buses on a map.
+- Bus schedules: Users can view the arrival and departure times for all buses.
+- Notifications: Users receive notifications for bus arrival and departure times.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+To get a local copy up and running, follow these steps:
 
-A few resources to get you started if this is your first Flutter project:
+### Prerequisites
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Install [Flutter SDK](https://flutter.dev/docs/get-started/install).
+- Install [Dart SDK](https://dart.dev/get-dart).
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# bus_app
+### Installation
+
+1. Clone the repo:
+   bash
+   git clone <your-repo-link>
+
+2. Navigate to the project directory:
+   cd <your-project-directory>
+3.Get dependencies:
+  flutter pub get
+
+4. Run the app:
+   flutter run
